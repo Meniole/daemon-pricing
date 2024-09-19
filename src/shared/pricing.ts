@@ -1,10 +1,20 @@
 import { Context } from "../types/context";
 import { Label } from "../types/github";
 
+function roundAndTruncate(price: number): number {
+  const truncated = Math.floor(price * 100) / 100;
+
+  if (truncated % 1 === 0) {
+    return Math.floor(truncated);
+  }
+
+  return truncated;
+}
+
 export function calculateTaskPrice(context: Context, timeValue: number, priorityValue: number, baseValue?: number): number {
   const base = baseValue ?? context.config.basePriceMultiplier;
   const priority = priorityValue / 10; // floats cause bad math
-  return 1000 * base * timeValue * priority;
+  return roundAndTruncate(1000 * base * timeValue * priority);
 }
 
 export function setPrice(context: Context, timeLabel: Label, priorityLabel: Label) {
