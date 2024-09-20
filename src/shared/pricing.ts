@@ -1,20 +1,11 @@
 import { Context } from "../types/context";
 import { Label } from "../types/github";
+import { Decimal } from "decimal.js";
 
-function roundAndTruncate(price: number): number {
-  const truncated = Math.floor(price * 100) / 100;
-
-  if (truncated % 1 === 0) {
-    return Math.floor(truncated);
-  }
-
-  return truncated;
-}
-
-export function calculateTaskPrice(context: Context, timeValue: number, priorityValue: number, baseValue?: number): number {
+export function calculateTaskPrice(context: Context, timeValue: number, priorityValue: number, baseValue?: number): string {
   const base = baseValue ?? context.config.basePriceMultiplier;
-  const priority = priorityValue / 10; // floats cause bad math
-  return roundAndTruncate(1000 * base * timeValue * priority);
+  const priority = new Decimal(priorityValue).div(10); // floats cause bad math
+  return new Decimal(base).mul(1000).mul(timeValue).mul(priority).toDecimalPlaces(0, Decimal.ROUND_DOWN).toString();
 }
 
 export function setPrice(context: Context, timeLabel: Label, priorityLabel: Label) {

@@ -38,6 +38,7 @@
     "@sinclair/typebox": "^0.32.15",
     "@supabase/supabase-js": "2.43.1",
     "commander": "12.0.0",
+    "decimal.js": "^10.4.3",
     "dotenv": "^16.4.5",
     "typebox-validators": "0.3.5"
   },
