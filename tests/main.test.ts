@@ -8,6 +8,7 @@ import { server } from "./__mocks__/node";
 import issueCommented from "./__mocks__/requests/issue-comment-post.json";
 import usersGet from "./__mocks__/users-get.json";
 import * as crypto from "crypto";
+import { calculateLabelValue, calculateTaskPrice } from "../src/shared/pricing";
 
 const { publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
   modulusLength: 2048,
@@ -75,6 +76,36 @@ describe("User tests", () => {
       labels: [],
       username: "user",
     });
+  });
+
+  it("Should accurately calculate prices", () => {
+    const context = {
+      config: {
+        basePriceMultiplier: 3.0,
+      },
+    };
+    const testCases = [
+      {
+        timeValue: calculateLabelValue("<1 minutes"),
+        priorityValue: calculateLabelValue("3 priority"),
+        expectedPrice: "1",
+      },
+      {
+        timeValue: calculateLabelValue("<4 hours"),
+        priorityValue: calculateLabelValue("2 priority"),
+        expectedPrice: "300",
+      },
+      {
+        timeValue: calculateLabelValue("<1 hours"),
+        priorityValue: calculateLabelValue("2 priority"),
+        expectedPrice: "75",
+      },
+    ];
+    for (const testCase of testCases) {
+      // @ts-expect-error ignore untyped context;
+      const price = calculateTaskPrice(context, testCase.timeValue, testCase.priorityValue);
+      expect(price).toEqual(testCase.expectedPrice);
+    }
   });
 
   it("Should handle the comment", async () => {
