@@ -1,5 +1,48 @@
 # Changelog
 
+## [4.5.0](https://github.com/Meniole/daemon-pricing/compare/v4.4.0...v4.5.0) (2026-01-05)
+
+
+### Features
+
+* add `/time` command support ([b3582c5](https://github.com/Meniole/daemon-pricing/commit/b3582c52ed2db0de442f55bbc24c3867e986aef2))
+* add `/time` command support ([7cbb128](https://github.com/Meniole/daemon-pricing/commit/7cbb1282e850e628a05873063b32f6d43df8070a))
+* add api auto pricing ([00b6d03](https://github.com/Meniole/daemon-pricing/commit/00b6d031d8a1fb047ca0bbf531cc3e1399cd244d))
+* add api auto pricing ([12dad3d](https://github.com/Meniole/daemon-pricing/commit/12dad3de4b62a6d79a72485de56c36110f8f4739))
+* add api auto pricing ([5efa302](https://github.com/Meniole/daemon-pricing/commit/5efa3020ba425a0d6fa71819afe03b0b728e0acf))
+* add support for handling `issues.transferred` events ([b5b06ae](https://github.com/Meniole/daemon-pricing/commit/b5b06ae92ab3813e7faf13f0f94cc2ef795c0cf4))
+* add support for handling `issues.transferred` events ([918536a](https://github.com/Meniole/daemon-pricing/commit/918536a43b1e850c266d3e620f830b07f4f714fb))
+* added deno support ([2c0606c](https://github.com/Meniole/daemon-pricing/commit/2c0606c3297c035476a360fb451e46f1c33c574f))
+* azure deploy ([324af09](https://github.com/Meniole/daemon-pricing/commit/324af09d8d05b9da666e357cd8ad4ac50d16fae3))
+* deno ([e002504](https://github.com/Meniole/daemon-pricing/commit/e002504015fe024aaa994797efbc4dc6caa6b02e))
+* vercel migration ([31dc3b8](https://github.com/Meniole/daemon-pricing/commit/31dc3b89523e25a198786a44d101add11bdfa411))
+
+
+### Bug Fixes
+
+* add "maintain" to collaborator roles ([12eea37](https://github.com/Meniole/daemon-pricing/commit/12eea373b670ffc6bf54a62ee2f4ed51f030511b))
+* add unit tests for `/time` label permissions ([8166c3d](https://github.com/Meniole/daemon-pricing/commit/8166c3d69e68e1563cf2678a532301607147bf44))
+* **ci:** remove excluded ACTIONS_ prefix from secrets filter ([3b114b3](https://github.com/Meniole/daemon-pricing/commit/3b114b3c0ffe2e8ebdaadfbf1bd956043bc69a7c))
+* fixed environment for Azure and Husky ([ab7e113](https://github.com/Meniole/daemon-pricing/commit/ab7e11340b461e04d7dc0e12493c3b25cc78754e))
+* handle bot-applied `/time` labels correctly ([e58f350](https://github.com/Meniole/daemon-pricing/commit/e58f350b11b7ab4ada0c4e9f19336c27a0005aea))
+* **husky:** comment out unused Husky script import ([1941b86](https://github.com/Meniole/daemon-pricing/commit/1941b86baac8ac8c1ea3fc6c3c0bfffc409973fa))
+* label generation ([305eed6](https://github.com/Meniole/daemon-pricing/commit/305eed61201335f4fec9f5340b556a990b74a232))
+* **labels:** remove unauthorized labels after permission warning (fix [#126](https://github.com/Meniole/daemon-pricing/issues/126)) ([4f6e064](https://github.com/Meniole/daemon-pricing/commit/4f6e064ba2edb66e808fc0b95119c5ab9638c6e1))
+* only the incorrect labels get deleted on multiplier update ([e05e224](https://github.com/Meniole/daemon-pricing/commit/e05e224c8cd5c4f27b0a11e58e6d37d58ac6f6f6))
+* pricing attempt on parent issue now displays a warning, or nothing is no price is set ([72c8912](https://github.com/Meniole/daemon-pricing/commit/72c89125b01c6c111010b5afa80794a9614b32e3))
+* pricing parent issue ([fd23fd0](https://github.com/Meniole/daemon-pricing/commit/fd23fd031d531dde732144e8b6142f240e82964e))
+* release please issue permission ([42ca404](https://github.com/Meniole/daemon-pricing/commit/42ca40494dd9bb3f7b52874350a27c87bb62e1ca))
+* remove paraphrasing comments & apiUrl -&gt; basetenApiUrl ([7ecaf04](https://github.com/Meniole/daemon-pricing/commit/7ecaf04a972ed5b7da42d8bb4902891185e91bab))
+* remove paraphrasing comments & apiUrl -&gt; basetenApiUrl ([c3e474b](https://github.com/Meniole/daemon-pricing/commit/c3e474bb21e55b0c80a511d4a294480244fef810))
+* remove public-access-control ([16dff27](https://github.com/Meniole/daemon-pricing/commit/16dff27429d4ccc399a13e30b197c07a4c6f7272))
+* removed `publicAccessControl` and replaced it with `shouldFundContributorClosedIssue` ([f250edb](https://github.com/Meniole/daemon-pricing/commit/f250edb16d6785cf73dedfda858c178b1d37ce11))
+* require BASTEN_API_URL ([aaf5199](https://github.com/Meniole/daemon-pricing/commit/aaf5199e346c3b064016a381ac40bc81eed0a0d2))
+* require BASTEN_API_URL ([6c43ef4](https://github.com/Meniole/daemon-pricing/commit/6c43ef4086b5385e67ef81d166416406b1d9bdbf))
+* set environment main for main branch and tags ([26d1f68](https://github.com/Meniole/daemon-pricing/commit/26d1f686f219bc698ad5a66af19f164c2b18251d))
+* set environment main for main branch and tags ([8f82ec9](https://github.com/Meniole/daemon-pricing/commit/8f82ec9f08fd6359c87845e207ffe80eae43413a))
+* the error message regarding the label set only appear on pricing attempts ([bc91264](https://github.com/Meniole/daemon-pricing/commit/bc91264bed7fd25c883bec23739d265eec170d86))
+* **vercel-deploy:** handle multiple environments dynamically ([54370e4](https://github.com/Meniole/daemon-pricing/commit/54370e4836fbaf0d32699dca24c513a8ea3d1b17))
+
 ## [4.4.0](https://github.com/ubiquity-os-marketplace/daemon-pricing/compare/v4.3.0...v4.4.0) (2025-06-03)
 
 
