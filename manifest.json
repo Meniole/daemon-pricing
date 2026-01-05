@@ -1,11 +1,149 @@
 {
   "name": "Assistive pricing",
   "description": "Handles assistive pricing, and allows for users to modify labels.",
-  "ubiquity:listeners": [ "issues.labeled", "issues.unlabeled", "label.edited", "issue_comment.created" ],
+  "ubiquity:listeners": ["repository.created", "issues.opened", "issues.labeled", "issues.unlabeled", "label.edited", "push"],
   "commands": {
-    "allow": {
-      "ubiquity:example": "/allow @user1 label",
-      "description": "Allows the user to modify the given label."
+    "time": {
+      "ubiquity:example": "/time 1 Day",
+      "description": "Sets the time label for the given task.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "duration": {
+            "description": "The duration of the task.",
+            "type": "string"
+          }
+        }
+      }
     }
-  }
+  },
+  "skipBotEvents": false,
+  "configuration": {
+    "default": {},
+    "type": "object",
+    "properties": {
+      "globalConfigUpdate": {
+        "description": "Updates all price labels across all tasks based on `baseRateMultiplier` changes within the config file.",
+        "type": "object",
+        "properties": {
+          "excludeRepos": {
+            "examples": ["repo-name", "no-owner-required"],
+            "description": "List of repositories to exclude from being updated",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": ["excludeRepos"]
+      },
+      "labels": {
+        "default": {},
+        "type": "object",
+        "properties": {
+          "time": {
+            "minItems": 1,
+            "default": [
+              {
+                "name": "Time: <15 Minutes",
+                "collaboratorOnly": false
+              },
+              {
+                "name": "Time: <1 Hour",
+                "collaboratorOnly": false
+              },
+              {
+                "name": "Time: <2 Hours",
+                "collaboratorOnly": false
+              },
+              {
+                "name": "Time: <4 Hours",
+                "collaboratorOnly": false
+              },
+              {
+                "name": "Time: <1 Day",
+                "collaboratorOnly": false
+              },
+              {
+                "name": "Time: <1 Week",
+                "collaboratorOnly": false
+              }
+            ],
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "examples": ["Time: <2 Hours", "Time: <1 Week"],
+                  "description": "The display name of the label representing estimated task length",
+                  "pattern": "^Time:\\s<?\\d+\\s\\S+$",
+                  "type": "string"
+                }
+              },
+              "required": ["name"]
+            }
+          },
+          "priority": {
+            "minItems": 1,
+            "default": [
+              {
+                "name": "Priority: 0 (Regression)",
+                "collaboratorOnly": false
+              },
+              {
+                "name": "Priority: 1 (Normal)",
+                "collaboratorOnly": false
+              },
+              {
+                "name": "Priority: 2 (Medium)",
+                "collaboratorOnly": false
+              },
+              {
+                "name": "Priority: 3 (High)",
+                "collaboratorOnly": false
+              },
+              {
+                "name": "Priority: 4 (Urgent)",
+                "collaboratorOnly": false
+              },
+              {
+                "name": "Priority: 5 (Emergency)",
+                "collaboratorOnly": false
+              }
+            ],
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "examples": ["Priority: 1 (Normal)", "Priority: 5 (Emergency)"],
+                  "description": "The display name of the label representing task priority",
+                  "type": "string"
+                },
+                "collaboratorOnly": {
+                  "default": false,
+                  "description": "Whether the task is only available for collaborators to be assigned",
+                  "type": "boolean"
+                }
+              },
+              "required": ["name"]
+            }
+          }
+        }
+      },
+      "basePriceMultiplier": {
+        "examples": [1.5],
+        "default": 1,
+        "description": "The base price multiplier for all tasks",
+        "type": "number"
+      },
+      "shouldFundContributorClosedIssue": {
+        "default": false,
+        "description": "Whether to allow funding contributor closed issues",
+        "type": "boolean"
+      }
+    }
+  },
+  "homepage_url": "https://meniole-pricing.deno.dev",
+  "short_name": "Meniole/daemon-pricing@development"
 }

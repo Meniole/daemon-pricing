@@ -1,58 +1,66 @@
-import { Octokit } from "@octokit/rest";
-import { createClient } from "@supabase/supabase-js";
-import { createAdapters } from "./adapters";
-import { handleComment } from "./handlers/comment";
-import { watchLabelChange } from "./handlers/label-change";
-import { onLabelChangeSetPricing } from "./handlers/pricing-label";
+import { globalLabelUpdate } from "./handlers/global-config-update";
+import { onIssueOpenedUpdatePricing, onLabelChangeSetPricing } from "./handlers/pricing-label";
 import { syncPriceLabelsToConfig } from "./handlers/sync-labels-to-config";
 import { Context } from "./types/context";
-import { Env } from "./types/env";
-import { PluginInputs } from "./types/plugin-input";
+import { isIssueCommentEvent, isIssueLabelEvent } from "./types/typeguards";
+import { time } from "./utils/time";
 
-export async function run(inputs: PluginInputs, env: Env) {
-  const octokit = new Octokit({ auth: inputs.authToken });
-  const supabaseClient = createClient(env.SUPABASE_URL, env.SUPABASE_KEY);
+export function isLocalEnvironment() {
+  return process.env.NODE_ENV === "local";
+}
 
-  const context: Context = {
-    eventName: inputs.eventName,
-    payload: inputs.eventPayload,
-    config: inputs.settings,
-    octokit,
-    logger: {
-      debug(message: unknown, ...optionalParams: unknown[]) {
-        console.debug(message, ...optionalParams);
-      },
-      info(message: unknown, ...optionalParams: unknown[]) {
-        console.log(message, ...optionalParams);
-      },
-      warn(message: unknown, ...optionalParams: unknown[]) {
-        console.warn(message, ...optionalParams);
-      },
-      error(message: unknown, ...optionalParams: unknown[]) {
-        console.error(message, ...optionalParams);
-      },
-      fatal(message: unknown, ...optionalParams: unknown[]) {
-        console.error(message, ...optionalParams);
-      },
-    },
-    adapters: {} as ReturnType<typeof createAdapters>,
-  };
-  context.adapters = createAdapters(supabaseClient, context);
+export function isGithubOrLocalEnvironment() {
+  return isLocalEnvironment() || !!process.env.GITHUB_ACTIONS;
+}
 
-  const eventName = inputs.eventName;
+export function isWorkerOrLocalEnvironment() {
+  return isLocalEnvironment() || !process.env.GITHUB_ACTIONS;
+}
+
+export async function handleCommand(context: Context) {
+  if (!context.command) {
+    throw new Error("No command found in the context.");
+  }
+
+  if (context.command.name === "time" && isIssueCommentEvent(context)) {
+    await time(context);
+  }
+}
+
+export async function run(context: Context) {
+  const { eventName, logger } = context;
+
   switch (eventName) {
+    case "issue_comment.created":
+      if (isWorkerOrLocalEnvironment() && isIssueCommentEvent(context)) {
+        await time(context);
+      }
+      break;
+    case "issues.opened": {
+      if (isGithubOrLocalEnvironment()) {
+        await syncPriceLabelsToConfig(context);
+        await onIssueOpenedUpdatePricing(context);
+      }
+      break;
+    }
+    case "repository.created":
+      if (isGithubOrLocalEnvironment()) {
+        await syncPriceLabelsToConfig(context);
+      }
+      break;
     case "issues.labeled":
     case "issues.unlabeled":
-      await syncPriceLabelsToConfig(context);
-      await onLabelChangeSetPricing(context);
+      if (isIssueLabelEvent(context) && isWorkerOrLocalEnvironment()) {
+        await onLabelChangeSetPricing(context);
+      }
       break;
-    case "label.edited":
-      await watchLabelChange(context);
-      break;
-    case "issue_comment.created":
-      await handleComment(context);
+    case "push":
+      if (isGithubOrLocalEnvironment()) {
+        await globalLabelUpdate(context);
+      }
       break;
     default:
-      context.logger.warn(`Event ${eventName} is not supported`);
+      logger.error(`Event ${eventName} is not supported`);
   }
+  return { message: "OK" };
 }

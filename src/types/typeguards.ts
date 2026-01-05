@@ -1,11 +1,5 @@
 import { Context } from "./context";
 
-export function isCommentEvent(
-  context: Context
-): context is Context & { payload: { issue: Context<"issue_comment">["payload"]["issue"]; comment: Context<"issue_comment">["payload"]["comment"] } } {
-  return context.eventName.startsWith("issue_comment.");
-}
-
 export function isIssueLabelEvent(context: Context): context is Context & {
   payload: {
     issue: Context<"issues.labeled" | "issues.unlabeled">["payload"]["issue"];
@@ -15,11 +9,14 @@ export function isIssueLabelEvent(context: Context): context is Context & {
   return context.eventName === "issues.labeled" || context.eventName === "issues.unlabeled";
 }
 
-export function isLabelEditedEvent(context: Context): context is Context & {
-  payload: {
-    label: Context<"label.edited">["payload"]["label"];
-    changes: Context<"label.edited">["payload"]["changes"];
-  };
-} {
-  return context.eventName === "label.edited";
+export function isIssueOpenedEvent(context: Context): context is Context<"issues.opened"> {
+  return context.eventName === "issues.opened";
+}
+
+export function isIssueCommentEvent(context: Context): context is Context<"issue_comment.created"> {
+  return "issue" in context.payload;
+}
+
+export function isPushEvent(context: Context): context is Context & { payload: Context<"push">["payload"] } {
+  return context.eventName === "push";
 }

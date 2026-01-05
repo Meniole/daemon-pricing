@@ -1,32 +1,103 @@
-import { EmitterWebhookEvent as WebhookEvent, EmitterWebhookEventName as WebhookEventName } from "@octokit/webhooks";
-import { SupportedEvents } from "./context";
 import { StaticDecode, Type as T } from "@sinclair/typebox";
 
-export interface PluginInputs<T extends WebhookEventName = SupportedEvents> {
-  stateId: string;
-  eventName: T;
-  eventPayload: WebhookEvent<T>["payload"];
-  settings: AssistivePricingSettings;
-  authToken: string;
-  ref: string;
-}
+export const pluginSettingsSchema = T.Object(
+  {
+    globalConfigUpdate: T.Optional(
+      T.Object(
+        {
+          excludeRepos: T.Array(T.String(), {
+            examples: ["repo-name", "no-owner-required"],
+            description: "List of repositories to exclude from being updated",
+          }),
+        },
+        { description: "Updates all price labels across all tasks based on `baseRateMultiplier` changes within the config file." }
+      )
+    ),
+    labels: T.Object(
+      {
+        time: T.Array(
+          T.Object({
+            name: T.String({
+              examples: ["Time: <2 Hours", "Time: <1 Week"],
+              description: "The display name of the label representing estimated task length",
+              pattern: /^Time:\s<?\d+\s\S+$/i.source,
+            }),
+          }),
+          {
+            minItems: 1,
+            default: [
+              {
+                name: "Time: <15 Minutes",
+                collaboratorOnly: false,
+              },
+              {
+                name: "Time: <1 Hour",
+                collaboratorOnly: false,
+              },
+              {
+                name: "Time: <2 Hours",
+                collaboratorOnly: false,
+              },
+              {
+                name: "Time: <4 Hours",
+                collaboratorOnly: false,
+              },
+              {
+                name: "Time: <1 Day",
+                collaboratorOnly: false,
+              },
+              {
+                name: "Time: <1 Week",
+                collaboratorOnly: false,
+              },
+            ],
+          }
+        ),
+        priority: T.Array(
+          T.Object({
+            name: T.String({
+              examples: ["Priority: 1 (Normal)", "Priority: 5 (Emergency)"],
+              description: "The display name of the label representing task priority",
+            }),
+            collaboratorOnly: T.Boolean({ default: false, description: "Whether the task is only available for collaborators to be assigned" }),
+          }),
+          {
+            minItems: 1,
+            default: [
+              {
+                name: "Priority: 0 (Regression)",
+                collaboratorOnly: false,
+              },
+              {
+                name: "Priority: 1 (Normal)",
+                collaboratorOnly: false,
+              },
+              {
+                name: "Priority: 2 (Medium)",
+                collaboratorOnly: false,
+              },
+              {
+                name: "Priority: 3 (High)",
+                collaboratorOnly: false,
+              },
+              {
+                name: "Priority: 4 (Urgent)",
+                collaboratorOnly: false,
+              },
+              {
+                name: "Priority: 5 (Emergency)",
+                collaboratorOnly: false,
+              },
+            ],
+          }
+        ),
+      },
+      { default: {} }
+    ),
+    basePriceMultiplier: T.Number({ examples: [1.5], default: 1, description: "The base price multiplier for all tasks" }),
+    shouldFundContributorClosedIssue: T.Boolean({ default: false, description: "Whether to allow funding contributor closed issues" }),
+  },
+  { default: {} }
+);
 
-export const assistivePricingSettingsSchema = T.Object({
-  labels: T.Object(
-    {
-      time: T.Array(T.String(), { default: [] }),
-      priority: T.Array(T.String(), { default: [] }),
-    },
-    { default: {} }
-  ),
-  basePriceMultiplier: T.Number({ default: 1 }),
-  publicAccessControl: T.Object(
-    {
-      setLabel: T.Boolean({ default: false }),
-      fundExternalClosedIssue: T.Boolean({ default: false }),
-    },
-    { default: {} }
-  ),
-});
-
-export type AssistivePricingSettings = StaticDecode<typeof assistivePricingSettingsSchema>;
+export type AssistivePricingSettings = StaticDecode<typeof pluginSettingsSchema>;
