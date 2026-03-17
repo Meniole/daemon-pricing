@@ -157,5 +157,6 @@
         "type": "boolean"
       }
     }
-  }
+  },
+  "homepage_url": "https://meniole-pricing.deno.dev"
 }
