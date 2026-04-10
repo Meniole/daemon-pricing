@@ -157,6 +157,5 @@
         "type": "boolean"
       }
     }
-  },
-  "homepage_url": "https://meniole-pricing-development.ubiquity-os.deno.net"
+  }
 }
